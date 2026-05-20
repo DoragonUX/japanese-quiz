@@ -1,0 +1,583 @@
+  <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japanese Quiz - Estude Japonês</title>
+  <style>
+
+    .jp-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    /* Filtros de categoria */
+    .jp-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .jp-filter button {
+      font-size: 13px;
+      padding: 5px 14px;
+      border-radius: 99px;
+      border: 1px solid #cbd5e1;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .jp-filter button.active {
+      background: #1e3a8a;
+      color: #bfdbfe;
+      border-color: #1e3a8a;
+    }
+
+    /* Toggle de modo */
+    .jp-mode {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .jp-mode span {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .jp-mode button {
+      font-size: 13px;
+      padding: 5px 14px;
+      border-radius: 99px;
+      border: 1px solid #cbd5e1;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .jp-mode button.active {
+      background: #0f766e;
+      color: #99f6e4;
+      border-color: #0f766e;
+    }
+
+    /* Barra de progresso */
+    .jp-progress-bar {
+      background: #e2e8f0;
+      border-radius: 99px;
+      height: 7px;
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+
+    .jp-progress-fill {
+      height: 100%;
+      background: #2563eb;
+      border-radius: 99px;
+      transition: width 0.35s;
+    }
+
+    .jp-progress-label {
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    /* Card da palavra */
+    .jp-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 36px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    .jp-card.correct {
+      border-color: #16a34a;
+      background: #f0fdf4;
+    }
+
+    .jp-card.incorrect {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .jp-kanji {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #111827;
+      line-height: 1.15;
+      margin: 0 0 8px;
+    }
+
+    .jp-hint {
+      font-size: 14px;
+      color: #64748b;
+      min-height: 20px;
+    }
+
+    /* Input */
+    .jp-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .jp-input-field {
+      flex: 1;
+      padding: 11px 14px;
+      font-size: 1em;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      color: #1e293b;
+      background: #ffffff;
+    }
+
+    .jp-input-field:focus {
+      border-color: #2563eb;
+    }
+
+    /* Botões */
+    .jp-btn {
+      padding: 10px 18px;
+      font-size: 0.95em;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .jp-btn:active {
+      transform: scale(0.97);
+    }
+
+    .jp-btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .jp-btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .jp-btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .jp-btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .jp-btn-success {
+      background: #16a34a;
+      color: #ffffff;
+    }
+
+    .jp-btn-success:hover {
+      background: #15803d;
+    }
+
+    .jp-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    /* Feedback */
+    .jp-feedback {
+      font-size: 1em;
+      font-weight: 600;
+      min-height: 22px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .jp-feedback.ok    { color: #16a34a; }
+    .jp-feedback.err   { color: #dc2626; }
+    .jp-feedback.info  { color: #2563eb; }
+
+    /* Estatísticas */
+    .jp-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+    }
+
+    .jp-stat {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .jp-stat-val {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .jp-stat-lbl {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 480px) {
+      .jp-kanji { font-size: 2.4rem; }
+      .jp-btns  { gap: 6px; }
+      .jp-btn   { padding: 9px 13px; font-size: 0.88em; }
+    }
+  </style>
+</head>
+<body>
+<!-- === LINK PARA O BLOG === -->
+  <div class="jp-header">
+    <a href="https://japonesnewsbr.blogspot.com/" target="_blank">
+      ← Ir para o Blog Japonês News Br
+    </a>
+  </div>
+ <p>
+  v1.3<br/>
+  <strong>Total: 202 palavras</strong><br/>
+  Foco em JLPT N5 e início do N4 + Kanjis essenciais
+</p>
+
+  <div class="jp-wrap">
+
+    <div class="jp-filter" id="jp-filter"></div>
+
+    <div class="jp-mode">
+      <span>Modo:</span>
+      <button class="active" id="btn-romaji" onclick="setMode('romaji')">Romaji</button>
+      <button id="btn-hiragana" onclick="setMode('hiragana')">Hiragana</button>
+    </div>
+
+    <div class="jp-progress-bar">
+      <div class="jp-progress-fill" id="jp-prog-fill" style="width:0%"></div>
+    </div>
+    <div class="jp-progress-label">
+      <span id="jp-prog-label">Carta 1 de —</span>
+      <span id="jp-prog-pct">0%</span>
+    </div>
+
+    <div class="jp-card" id="jp-card">
+      <div class="jp-kanji" id="jp-word">...</div>
+      <div class="jp-hint"  id="jp-hint"></div>
+    </div>
+
+    <div class="jp-input-row">
+      <input type="text" id="jp-input" class="jp-input-field"
+             placeholder="Digite em romaji (ex: koneko)" autocomplete="off" />
+      <button class="jp-btn jp-btn-primary" onclick="checkAnswer()">✓</button>
+    </div>
+
+    <div class="jp-btns">
+      <button class="jp-btn jp-btn-secondary" onclick="revealHint()">💡 Dica</button>
+      <button class="jp-btn jp-btn-success"   id="jp-btn-next" style="display:none" onclick="nextWord()">Próxima →</button>
+      <button class="jp-btn jp-btn-secondary" onclick="resetSession()">↺ Reiniciar</button>
+    </div>
+
+    <div class="jp-feedback" id="jp-feedback"></div>
+
+    <div class="jp-stats">
+      <div class="jp-stat">
+        <div class="jp-stat-val" id="st-correct">0</div>
+        <div class="jp-stat-lbl">Acertos</div>
+      </div>
+      <div class="jp-stat">
+        <div class="jp-stat-val" id="st-total">0</div>
+        <div class="jp-stat-lbl">Respondidas</div>
+      </div>
+      <div class="jp-stat">
+        <div class="jp-stat-val" id="st-pct">—</div>
+        <div class="jp-stat-lbl">Aproveitamento</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+   const vocab = [
+ 
+  // ==================== SAUDAÇÕES E FRASES ÚTEIS ====================
+    { word: "こんにちは", romaji: "konnichiwa", hiragana: "こんにちは", meaning: "Olá (durante o dia)", cat: "Frases" },
+    { word: "おはようございます", romaji: "ohayou gozaimasu", hiragana: "おはようございます", meaning: "Bom dia", cat: "Frases" },
+    { word: "こんばんは", romaji: "konbanwa", hiragana: "こんばんは", meaning: "Boa noite", cat: "Frases" },
+    { word: "ありがとうございます", romaji: "arigatou gozaimasu", hiragana: "ありがとうございます", meaning: "Obrigado(a) - formal", cat: "Frases" },
+    { word: "すみません", romaji: "sumimasen", hiragana: "すみません", meaning: "Com licença / Desculpe", cat: "Frases" },
+    { word: "お願いします", romaji: "onegaishimasu", hiragana: "おねがいします", meaning: "Por favor", cat: "Frases" },
+    { word: "はい", romaji: "hai", hiragana: "はい", meaning: "Sim", cat: "Frases" },
+    { word: "いいえ", romaji: "iie", hiragana: "いいえ", meaning: "Não", cat: "Frases" },
+    { word: "わかりません", romaji: "wakarimasen", hiragana: "わかりません", meaning: "Não entendo", cat: "Frases" },
+    { word: "大丈夫です", romaji: "daijoubu desu", hiragana: "だいじょうぶです", meaning: "Está tudo bem", cat: "Frases" },
+    { word: "いくらですか？", romaji: "ikura desu ka?", hiragana: "いくらですか？", meaning: "Quanto custa?", cat: "Frases" },
+    { word: "どこですか？", romaji: "doko desu ka?", hiragana: "どこですか？", meaning: "Onde fica?", cat: "Frases" },
+
+    // ==================== VERBOS ====================
+    { word: "食べる", romaji: "taberu", hiragana: "たべる", meaning: "Comer", cat: "Verbos" },
+    { word: "飲む", romaji: "nomu", hiragana: "のむ", meaning: "Beber", cat: "Verbos" },
+    { word: "行く", romaji: "iku", hiragana: "いく", meaning: "Ir", cat: "Verbos" },
+    { word: "来る", romaji: "kuru", hiragana: "くる", meaning: "Vir", cat: "Verbos" },
+    { word: "帰る", romaji: "kaeru", hiragana: "かえる", meaning: "Voltar", cat: "Verbos" },
+    { word: "見る", romaji: "miru", hiragana: "みる", meaning: "Ver / Olhar", cat: "Verbos" },
+    { word: "聞く", romaji: "kiku", hiragana: "きく", meaning: "Ouvir", cat: "Verbos" },
+    { word: "話す", romaji: "hanasu", hiragana: "はなす", meaning: "Falar", cat: "Verbos" },
+    { word: "読む", romaji: "yomu", hiragana: "よむ", meaning: "Ler", cat: "Verbos" },
+    { word: "書く", romaji: "kaku", hiragana: "かく", meaning: "Escrever", cat: "Verbos" },
+    { word: "買う", romaji: "kau", hiragana: "かう", meaning: "Comprar", cat: "Verbos" },
+    { word: "売る", romaji: "uru", hiragana: "うる", meaning: "Vender", cat: "Verbos" },
+    { word: "寝る", romaji: "neru", hiragana: "ねる", meaning: "Dormir", cat: "Verbos" },
+    { word: "起きる", romaji: "okiru", hiragana: "おきる", meaning: "Acordar", cat: "Verbos" },
+    { word: "勉強する", romaji: "benkyou suru", hiragana: "べんきょうする", meaning: "Estudar", cat: "Verbos" },
+    { word: "働く", romaji: "hataraku", hiragana: "はたらく", meaning: "Trabalhar", cat: "Verbos" },
+    { word: "遊ぶ", romaji: "asobu", hiragana: "あそぶ", meaning: "Brincar / Divertir-se", cat: "Verbos" },
+    { word: "待つ", romaji: "matsu", hiragana: "まつ", meaning: "Esperar", cat: "Verbos" },
+    { word: "会う", romaji: "au", hiragana: "あう", meaning: "Encontrar (pessoa)", cat: "Verbos" },
+    { word: "教える", romaji: "oshieru", hiragana: "おしえる", meaning: "Ensinar", cat: "Verbos" },
+    { word: "学ぶ", romaji: "manabu", hiragana: "まなぶ", meaning: "Aprender", cat: "Verbos" },
+    { word: "使う", romaji: "tsukau", hiragana: "つかう", meaning: "Usar", cat: "Verbos" },
+    { word: "開ける", romaji: "akeru", hiragana: "あける", meaning: "Abrir", cat: "Verbos" },
+    { word: "閉める", romaji: "shimeru", hiragana: "しめる", meaning: "Fechar", cat: "Verbos" },
+
+    // ==================== PESSOAS E FAMÍLIA ====================
+    { word: "人", romaji: "hito", hiragana: "ひと", meaning: "Pessoa", cat: "Pessoas" },
+    { word: "家族", romaji: "kazoku", hiragana: "かぞく", meaning: "Família", cat: "Pessoas" },
+    { word: "お母さん", romaji: "okaasan", hiragana: "おかあさん", meaning: "Mãe", cat: "Pessoas" },
+    { word: "お父さん", romaji: "otousan", hiragana: "おとうさん", meaning: "Pai", cat: "Pessoas" },
+    { word: "友達", romaji: "tomodachi", hiragana: "ともだち", meaning: "Amigo", cat: "Pessoas" },
+    { word: "先生", romaji: "sensei", hiragana: "せんせい", meaning: "Professor", cat: "Pessoas" },
+    { word: "学生", romaji: "gakusei", hiragana: "がくせい", meaning: "Estudante", cat: "Pessoas" },
+    { word: "子供", romaji: "kodomo", hiragana: "こども", meaning: "Criança", cat: "Pessoas" },
+
+    // ==================== ANIMALS ====================
+    { word: "猫", romaji: "neko", hiragana: "ねこ", meaning: "Gato", cat: "Animais" },
+    { word: "犬", romaji: "inu", hiragana: "いぬ", meaning: "Cachorro", cat: "Animais" },
+    { word: "鳥", romaji: "tori", hiragana: "とり", meaning: "Pássaro", cat: "Animais" },
+    { word: "魚", romaji: "sakana", hiragana: "さかな", meaning: "Peixe", cat: "Animais" },
+    { word: "馬", romaji: "uma", hiragana: "うま", meaning: "Cavalo", cat: "Animais" },
+
+    // ==================== COMIDA ====================
+    { word: "ご飯", romaji: "gohan", hiragana: "ごはん", meaning: "Arroz / Refeição", cat: "Comida" },
+    { word: "水", romaji: "mizu", hiragana: "みず", meaning: "Água", cat: "Comida" },
+    { word: "お茶", romaji: "ocha", hiragana: "おちゃ", meaning: "Chá", cat: "Comida" },
+    { word: "牛乳", romaji: "gyuunyuu", hiragana: "ぎゅうにゅう", meaning: "Leite", cat: "Comida" },
+    { word: "パン", romaji: "pan", hiragana: "ぱん", meaning: "Pão", cat: "Comida" },
+    { word: "果物", romaji: "kudamono", hiragana: "くだもの", meaning: "Fruta", cat: "Comida" },
+    { word: "野菜", romaji: "yasai", hiragana: "やさい", meaning: "Legumes", cat: "Comida" },
+    { word: "肉", romaji: "niku", hiragana: "にく", meaning: "Carne", cat: "Comida" },
+
+    // ==================== ADJETIVOS ====================
+    { word: "大きい", romaji: "ookii", hiragana: "おおきい", meaning: "Grande", cat: "Adjetivos" },
+    { word: "小さい", romaji: "chiisai", hiragana: "ちいさい", meaning: "Pequeno", cat: "Adjetivos" },
+    { word: "新しい", romaji: "atarashii", hiragana: "あたらしい", meaning: "Novo", cat: "Adjetivos" },
+    { word: "古い", romaji: "furui", hiragana: "ふるい", meaning: "Velho", cat: "Adjetivos" },
+    { word: "高い", romaji: "takai", hiragana: "たかい", meaning: "Alto / Caro", cat: "Adjetivos" },
+    { word: "安い", romaji: "yasui", hiragana: "やすい", meaning: "Barato", cat: "Adjetivos" },
+    { word: "可愛い", romaji: "kawaii", hiragana: "かわいい", meaning: "Fofo", cat: "Adjetivos" },
+    { word: "面白い", romaji: "omoshiroi", hiragana: "おもしろい", meaning: "Interessante / Divertido", cat: "Adjetivos" },
+    { word: "難しい", romaji: "muzukashii", hiragana: "むずかしい", meaning: "Difícil", cat: "Adjetivos" },
+    { word: "簡単", romaji: "kantan", hiragana: "かんたん", meaning: "Fácil", cat: "Adjetivos" },
+    { word: "熱い", romaji: "atsui", hiragana: "あつい", meaning: "Quente", cat: "Adjetivos" },
+    { word: "冷たい", romaji: "tsumetai", hiragana: "つめたい", meaning: "Frio", cat: "Adjetivos" },
+
+    // ==================== CORES ====================
+    { word: "赤い", romaji: "akai", hiragana: "あかい", meaning: "Vermelho", cat: "Cores" },
+    { word: "青い", romaji: "aoi", hiragana: "あおい", meaning: "Azul", cat: "Cores" },
+    { word: "白い", romaji: "shiroi", hiragana: "しろい", meaning: "Branco", cat: "Cores" },
+    { word: "黒い", romaji: "kuroi", hiragana: "くろい", meaning: "Preto", cat: "Cores" },
+    { word: "黄色い", romaji: "kiiroi", hiragana: "きいろい", meaning: "Amarelo", cat: "Cores" },
+
+    // ==================== NÚMEROS ====================
+    { word: "一", romaji: "ichi", hiragana: "いち", meaning: "Um", cat: "Números" },
+    { word: "二", romaji: "ni", hiragana: "に", meaning: "Dois", cat: "Números" },
+    { word: "三", romaji: "san", hiragana: "さん", meaning: "Três", cat: "Números" },
+    { word: "四", romaji: "yon", hiragana: "よん", meaning: "Quatro", cat: "Números" },
+    { word: "五", romaji: "go", hiragana: "ご", meaning: "Cinco", cat: "Números" },
+    { word: "六", romaji: "roku", hiragana: "ろく", meaning: "Seis", cat: "Números" },
+    { word: "七", romaji: "nana", hiragana: "なな", meaning: "Sete", cat: "Números" },
+    { word: "八", romaji: "hachi", hiragana: "はち", meaning: "Oito", cat: "Números" },
+    { word: "九", romaji: "kyuu", hiragana: "きゅう", meaning: "Nove", cat: "Números" },
+    { word: "十", romaji: "juu", hiragana: "じゅう", meaning: "Dez", cat: "Números" },
+
+    // ==================== TEMPO ====================
+    { word: "今日", romaji: "kyou", hiragana: "きょう", meaning: "Hoje", cat: "Tempo" },
+    { word: "明日", romaji: "ashita", hiragana: "あした", meaning: "Amanhã", cat: "Tempo" },
+    { word: "昨日", romaji: "kinou", hiragana: "きのう", meaning: "Ontem", cat: "Tempo" },
+    { word: "今", romaji: "ima", hiragana: "いま", meaning: "Agora", cat: "Tempo" },
+    { word: "時間", romaji: "jikan", hiragana: "じかん", meaning: "Hora / Tempo", cat: "Tempo" },
+
+    // ==================== LUGARES ====================
+    { word: "家", romaji: "ie", hiragana: "いえ", meaning: "Casa", cat: "Lugares" },
+    { word: "学校", romaji: "gakkou", hiragana: "がっこう", meaning: "Escola", cat: "Lugares" },
+    { word: "駅", romaji: "eki", hiragana: "えき", meaning: "Estação", cat: "Lugares" },
+    { word: "病院", romaji: "byouin", hiragana: "びょういん", meaning: "Hospital", cat: "Lugares" },
+    { word: "店", romaji: "mise", hiragana: "みせ", meaning: "Loja", cat: "Lugares" },
+    { word: "公園", romaji: "kouen", hiragana: "こうえん", meaning: "Parque", cat: "Lugares" },
+
+    // ==================== OUTROS (Kanji Essenciais) ====================
+    { word: "本", romaji: "hon", hiragana: "ほん", meaning: "Livro", cat: "Outros" },
+    { word: "車", romaji: "kuruma", hiragana: "くるま", meaning: "Carro", cat: "Outros" },
+    { word: "電車", romaji: "densha", hiragana: "でんしゃ", meaning: "Trem", cat: "Outros" },
+    { word: "名前", romaji: "namae", hiragana: "なまえ", meaning: "Nome", cat: "Outros" },
+    { word: "山", romaji: "yama", hiragana: "やま", meaning: "Montanha", cat: "Outros" },
+    { word: "川", romaji: "kawa", hiragana: "かわ", meaning: "Rio", cat: "Outros" },
+    { word: "花", romaji: "hana", hiragana: "はな", meaning: "Flor", cat: "Outros" },
+    { word: "雨", romaji: "ame", hiragana: "あめ", meaning: "Chuva", cat: "Outros" }
+  ];
+
+
+const cats = ["Todos", ...new Set(vocab.map(v => v.cat))];
+  
+  let activecat = "Todos";
+  let mode = "romaji";
+  let deck = [];
+  let idx = 0;
+  let correct = 0;
+  let total = 0;
+  let answered = false;
+
+    function buildFilter() {
+      const el = document.getElementById("jp-filter");
+      el.innerHTML = "";
+      cats.forEach(c => {
+        const b = document.createElement("button");
+        b.textContent = c;
+        if (c === activecat) b.classList.add("active");
+        b.onclick = () => { activecat = c; buildFilter(); resetSession(); };
+        el.appendChild(b);
+      });
+    }
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById("btn-romaji").classList.toggle("active", m === "romaji");
+      document.getElementById("btn-hiragana").classList.toggle("active", m === "hiragana");
+      document.getElementById("jp-input").placeholder =
+        m === "romaji" ? "Digite em romaji (ex: koneko)" : "Digite em hiragana (ex: こねこ)";
+      loadWord();
+    }
+
+    function getDeck() {
+      const f = activecat === "Todos" ? vocab : vocab.filter(v => v.cat === activecat);
+      return [...f].sort(() => Math.random() - 0.5);
+    }
+
+    function resetSession() {
+      deck = getDeck();
+      idx = 0; correct = 0; total = 0; answered = false;
+      updateStats();
+      loadWord();
+    }
+
+    function loadWord() {
+      if (!deck.length) return;
+      const item = deck[idx];
+      document.getElementById("jp-word").textContent   = item.word;
+      document.getElementById("jp-hint").textContent   = "";
+      document.getElementById("jp-input").value        = "";
+      document.getElementById("jp-input").disabled     = false;
+      document.getElementById("jp-feedback").textContent = "";
+      document.getElementById("jp-feedback").className   = "jp-feedback";
+      document.getElementById("jp-btn-next").style.display = "none";
+      document.getElementById("jp-card").className        = "jp-card";
+      answered = false;
+      updateProgress();
+      document.getElementById("jp-input").focus();
+    }
+
+    function updateProgress() {
+      const n   = deck.length;
+      const pct = n ? Math.round((idx / n) * 100) : 0;
+      document.getElementById("jp-prog-fill").style.width  = pct + "%";
+      document.getElementById("jp-prog-label").textContent = "Carta " + (idx + 1) + " de " + n;
+      document.getElementById("jp-prog-pct").textContent   = pct + "%";
+    }
+
+    function updateStats() {
+      document.getElementById("st-correct").textContent = correct;
+      document.getElementById("st-total").textContent   = total;
+      document.getElementById("st-pct").textContent     = total ? Math.round((correct / total) * 100) + "%" : "—";
+    }
+
+    function checkAnswer() {
+      if (answered) { nextWord(); return; }
+      const val = document.getElementById("jp-input").value.trim().toLowerCase();
+      if (!val) { setFeedback("Por favor, digite uma resposta.", "info"); return; }
+
+      const item     = deck[idx];
+      const expected = mode === "romaji" ? item.romaji.toLowerCase() : item.hiragana;
+      answered = true;
+      total++;
+      document.getElementById("jp-input").disabled        = true;
+      document.getElementById("jp-btn-next").style.display = "inline-block";
+
+      if (val === expected) {
+        correct++;
+        document.getElementById("jp-card").className = "jp-card correct";
+        setFeedback("🎉 Correto!  " + item.hiragana + "  —  " + item.meaning, "ok");
+      } else {
+        document.getElementById("jp-card").className = "jp-card incorrect";
+        const show = mode === "romaji" ? item.romaji : item.hiragana;
+        setFeedback("❌ Incorreto. Resposta: " + show + " (" + item.meaning + ")", "err");
+      }
+      updateStats();
+    }
+
+    function revealHint() {
+      if (answered) return;
+      document.getElementById("jp-hint").textContent = "Significado: " + deck[idx].meaning;
+    }
+
+    function nextWord() {
+      idx++;
+      if (idx >= deck.length) {
+        const pct = Math.round((correct / total) * 100);
+        setFeedback("Ciclo completo! Aproveitamento: " + pct + "%. Recomeçando...", "info");
+        setTimeout(() => { deck = getDeck(); idx = 0; answered = false; loadWord(); }, 2200);
+        return;
+      }
+      loadWord();
+    }
+
+    function setFeedback(msg, cls) {
+      const el = document.getElementById("jp-feedback");
+      el.textContent = msg;
+      el.className   = "jp-feedback " + cls;
+    }
+
+    document.getElementById("jp-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") { if (!answered) checkAnswer(); else nextWord(); }
+    });
+
+    buildFilter();
+    resetSession();
+  </script>
+</body>
+</html>
