@@ -6,38 +6,56 @@
   <title>Japanese Quiz - Estude Japonês</title>
   <style>
 
+  :root {
+      --primary: #1e3a8a;
+      --accent: #0f766e;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 20px 10px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .header a:hover {
+      text-decoration: underline;
+    }
+
     .jp-wrap {
       max-width: 520px;
       margin: 0 auto;
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 24px 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     /* Filtros de categoria */
-    .jp-filter {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
+  .jp-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
     .jp-filter button {
-      font-size: 13px;
-      padding: 5px 14px;
-      border-radius: 99px;
-      border: 1px solid #cbd5e1;
-      background: transparent;
-      color: #64748b;
+      font-size: 13px; padding: 6px 16px; border-radius: 9999px;
+      border: 1px solid #cbd5e1; background: transparent; color: #64748b;
       cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+    }
+    .jp-filter button.active {
+      background: var(--primary); color: white; border-color: var(--primary);
     }
 
-    .jp-filter button.active {
-      background: #1e3a8a;
-      color: #bfdbfe;
-      border-color: #1e3a8a;
+    .jp-kanji { font-size: 3.2rem; font-weight: bold; margin: 8px 0; }
+    @media (max-width: 480px) {
+      .jp-kanji { font-size: 2.6rem; }
     }
 
     /* Toggle de modo */
@@ -254,6 +272,12 @@
       .jp-btns  { gap: 6px; }
       .jp-btn   { padding: 9px 13px; font-size: 0.88em; }
     }
+
+.jp-card { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 40px 20px; text-align: center; min-height: 140px; }
+    .jp-card.correct { border-color: #16a34a; background: #f0fdf4; }
+    .jp-card.incorrect { border-color: #dc2626; background: #fef2f2; }
+
+    .jp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -263,13 +287,11 @@
       ← Ir para o Blog Japonês News Br
     </a>
   </div>
- <p>
-  v1.3<br/>
-  <strong>Total: 202 palavras</strong><br/>
-  Foco em JLPT N5 e início do N4 + Kanjis essenciais
-</p>
 
-  <div class="jp-wrap">
+<div class="jp-wrap">
+    <p style="text-align:center; margin:0 0 20px 0; color:#64748b; font-size:14px;">
+      <strong>v1.4</strong> • 202 palavras • JLPT N5 + N4
+    </p>
 
     <div class="jp-filter" id="jp-filter"></div>
 
@@ -279,7 +301,7 @@
       <button id="btn-hiragana" onclick="setMode('hiragana')">Hiragana</button>
     </div>
 
-    <div class="jp-progress-bar">
+   <div class="jp-progress-bar">
       <div class="jp-progress-fill" id="jp-prog-fill" style="width:0%"></div>
     </div>
     <div class="jp-progress-label">
@@ -289,18 +311,17 @@
 
     <div class="jp-card" id="jp-card">
       <div class="jp-kanji" id="jp-word">...</div>
-      <div class="jp-hint"  id="jp-hint"></div>
+      <div class="jp-hint" id="jp-hint"></div>
     </div>
 
     <div class="jp-input-row">
-      <input type="text" id="jp-input" class="jp-input-field"
-             placeholder="Digite em romaji (ex: koneko)" autocomplete="off" />
+      <input type="text" id="jp-input" class="jp-input-field" placeholder="Digite em romaji (ex: koneko)" autocomplete="off" />
       <button class="jp-btn jp-btn-primary" onclick="checkAnswer()">✓</button>
     </div>
 
     <div class="jp-btns">
       <button class="jp-btn jp-btn-secondary" onclick="revealHint()">💡 Dica</button>
-      <button class="jp-btn jp-btn-success"   id="jp-btn-next" style="display:none" onclick="nextWord()">Próxima →</button>
+      <button class="jp-btn jp-btn-success" id="jp-btn-next" style="display:none" onclick="nextWord()">Próxima →</button>
       <button class="jp-btn jp-btn-secondary" onclick="resetSession()">↺ Reiniciar</button>
     </div>
 
@@ -320,7 +341,6 @@
         <div class="jp-stat-lbl">Aproveitamento</div>
       </div>
     </div>
-
   </div>
 
   <script>
@@ -579,5 +599,20 @@ const cats = ["Todos", ...new Set(vocab.map(v => v.cat))];
     buildFilter();
     resetSession();
   </script>
+
+<h2>Adicione este Widget no seu site</h2>
+<p>Copie o código abaixo e cole no seu site:</p>
+
+<textarea readonly style="width:100%; height:180px; font-family:monospace;">
+<iframe 
+  src="https://doragonux.github.io/japanese-quiz/" 
+  width="100%" 
+  height="620" 
+  frameborder="0" 
+  scrolling="no"
+  style="border:1px solid #e2e8f0; border-radius:16px; max-width:540px;">
+</iframe>
+<p>Produzido por <a href='https://japonesnewsbr.blogspot.com/' target='_blank'>JPN BR</a></p>
+</textarea>
 </body>
 </html>
