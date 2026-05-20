@@ -4,48 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Japanese Quiz - Estude Japonês</title>
-  <style>
+ <style>
+    :root { --primary: #1e3a8a; --accent: #0f766e; }
 
-  :root {
-      --primary: #1e3a8a;
-      --accent: #0f766e;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f8fafc;
       margin: 0;
-      padding: 20px 10px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+
+    .jp-wrap {
+      max-width: 100%;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
+    .header a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
-    .header a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .header a:hover {
-      text-decoration: underline;
-    }
-
-    .jp-wrap {
-      max-width: 520px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 24px 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    /* Filtros de categoria */
-  .jp-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .jp-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
     .jp-filter button {
-      font-size: 13px; padding: 6px 16px; border-radius: 9999px;
+      font-size: 12.5px; padding: 5px 12px; border-radius: 999px;
       border: 1px solid #cbd5e1; background: transparent; color: #64748b;
       cursor: pointer;
     }
@@ -53,248 +40,64 @@
       background: var(--primary); color: white; border-color: var(--primary);
     }
 
-    .jp-kanji { font-size: 3.2rem; font-weight: bold; margin: 8px 0; }
-    @media (max-width: 480px) {
-      .jp-kanji { font-size: 2.6rem; }
-    }
+    .jp-mode button { font-size: 13px; padding: 6px 14px; }
 
-    /* Toggle de modo */
-    .jp-mode {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      align-items: center;
-    }
+    .jp-kanji { font-size: 2.9rem; font-weight: bold; margin: 12px 0; line-height: 1.1; }
+    .jp-progress-bar { background: #e2e8f0; height: 8px; border-radius: 999px; overflow: hidden; margin: 12px 0; }
+    .jp-progress-fill { height: 100%; background: #2563eb; transition: width 0.4s; }
 
-    .jp-mode span {
-      font-size: 13px;
-      color: #64748b;
-    }
-
-    .jp-mode button {
-      font-size: 13px;
-      padding: 5px 14px;
-      border-radius: 99px;
-      border: 1px solid #cbd5e1;
-      background: transparent;
-      color: #64748b;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .jp-mode button.active {
-      background: #0f766e;
-      color: #99f6e4;
-      border-color: #0f766e;
-    }
-
-    /* Barra de progresso */
-    .jp-progress-bar {
-      background: #e2e8f0;
-      border-radius: 99px;
-      height: 7px;
-      margin-bottom: 6px;
-      overflow: hidden;
-    }
-
-    .jp-progress-fill {
-      height: 100%;
-      background: #2563eb;
-      border-radius: 99px;
-      transition: width 0.35s;
-    }
-
-    .jp-progress-label {
-      font-size: 13px;
-      color: #64748b;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    /* Card da palavra */
     .jp-card {
-      background: #f8fafc;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 36px 20px;
-      text-align: center;
-      margin-bottom: 16px;
-      min-height: 130px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: border-color 0.25s, background 0.25s;
+      background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px;
+      padding: 32px 20px; text-align: center; min-height: 150px; margin: 16px 0;
     }
-
-    .jp-card.correct {
-      border-color: #16a34a;
-      background: #f0fdf4;
-    }
-
-    .jp-card.incorrect {
-      border-color: #dc2626;
-      background: #fef2f2;
-    }
-
-    .jp-kanji {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #111827;
-      line-height: 1.15;
-      margin: 0 0 8px;
-    }
-
-    .jp-hint {
-      font-size: 14px;
-      color: #64748b;
-      min-height: 20px;
-    }
-
-    /* Input */
-    .jp-input-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .jp-input-field {
-      flex: 1;
-      padding: 11px 14px;
-      font-size: 1em;
-      border: 2px solid #cbd5e1;
-      border-radius: 10px;
-      outline: none;
-      transition: border-color 0.2s;
-      color: #1e293b;
-      background: #ffffff;
-    }
-
-    .jp-input-field:focus {
-      border-color: #2563eb;
-    }
-
-    /* Botões */
-    .jp-btn {
-      padding: 10px 18px;
-      font-size: 0.95em;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .jp-btn:active {
-      transform: scale(0.97);
-    }
-
-    .jp-btn-primary {
-      background: #2563eb;
-      color: #ffffff;
-    }
-
-    .jp-btn-primary:hover {
-      background: #1d4ed8;
-    }
-
-    .jp-btn-secondary {
-      background: #e2e8f0;
-      color: #475569;
-    }
-
-    .jp-btn-secondary:hover {
-      background: #cbd5e1;
-    }
-
-    .jp-btn-success {
-      background: #16a34a;
-      color: #ffffff;
-    }
-
-    .jp-btn-success:hover {
-      background: #15803d;
-    }
-
-    .jp-btns {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    /* Feedback */
-    .jp-feedback {
-      font-size: 1em;
-      font-weight: 600;
-      min-height: 22px;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .jp-feedback.ok    { color: #16a34a; }
-    .jp-feedback.err   { color: #dc2626; }
-    .jp-feedback.info  { color: #2563eb; }
-
-    /* Estatísticas */
-    .jp-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 16px;
-    }
-
-    .jp-stat {
-      background: #f1f5f9;
-      border-radius: 10px;
-      padding: 12px 8px;
-      text-align: center;
-    }
-
-    .jp-stat-val {
-      font-size: 1.6em;
-      font-weight: 700;
-      color: #1e3a8a;
-    }
-
-    .jp-stat-lbl {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 3px;
-    }
-
-    /* Responsivo */
-    @media (max-width: 480px) {
-      .jp-kanji { font-size: 2.4rem; }
-      .jp-btns  { gap: 6px; }
-      .jp-btn   { padding: 9px 13px; font-size: 0.88em; }
-    }
-
-.jp-card { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 40px 20px; text-align: center; min-height: 140px; }
     .jp-card.correct { border-color: #16a34a; background: #f0fdf4; }
     .jp-card.incorrect { border-color: #dc2626; background: #fef2f2; }
 
-    .jp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+    .jp-input-row { display: flex; gap: 8px; margin: 16px 0; }
+    .jp-input-field {
+      flex: 1; padding: 14px; font-size: 1.05rem; border: 2px solid #cbd5e1;
+      border-radius: 12px; outline: none;
+    }
+    .jp-input-field:focus { border-color: var(--primary); }
+
+    .jp-btn {
+      padding: 12px 18px; font-size: 14px; font-weight: 600; border: none;
+      border-radius: 12px; cursor: pointer; white-space: nowrap;
+    }
+    .jp-btn-primary { background: var(--primary); color: white; }
+    .jp-btn-secondary { background: #e2e8f0; color: #475569; }
+    .jp-btn-success { background: #16a34a; color: white; }
+
+    .jp-btns { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+
+    .jp-feedback { min-height: 26px; text-align: center; font-weight: 600; margin: 12px 0; }
+
+    .jp-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;
+    }
+    .jp-stat {
+      background: #f1f5f9; padding: 12px 8px; border-radius: 12px; text-align: center;
+    }
+    .jp-stat-val { font-size: 1.55rem; font-weight: 700; color: var(--primary); }
+
+    @media (max-width: 480px) {
+      .jp-kanji { font-size: 2.4rem; }
+      .jp-btn { padding: 10px 14px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
 <!-- === LINK PARA O BLOG === -->
-  <div class="jp-header">
-    <a href="https://japonesnewsbr.blogspot.com/" target="_blank">
-      ← Ir para o Blog Japonês News Br
-    </a>
-  </div>
-
 <div class="jp-wrap">
-    <p style="text-align:center; margin:0 0 20px 0; color:#64748b; font-size:14px;">
-      <strong>v1.4</strong> • 202 palavras • JLPT N5 + N4
+    <div class="header">
+      <a href="https://japonesnewsbr.blogspot.com/" target="_blank">← Blog Japonês News Br</a>
+    </div>
+
+    <p style="text-align:center; margin:8px 0 18px 0; color:#64748b; font-size:13.5px;">
+      <strong>Japanese Quiz</strong> • 202 palavras • JLPT N5/N4
     </p>
 
     <div class="jp-filter" id="jp-filter"></div>
-
     <div class="jp-mode">
       <span>Modo:</span>
       <button class="active" id="btn-romaji" onclick="setMode('romaji')">Romaji</button>
@@ -328,21 +131,11 @@
     <div class="jp-feedback" id="jp-feedback"></div>
 
     <div class="jp-stats">
-      <div class="jp-stat">
-        <div class="jp-stat-val" id="st-correct">0</div>
-        <div class="jp-stat-lbl">Acertos</div>
-      </div>
-      <div class="jp-stat">
-        <div class="jp-stat-val" id="st-total">0</div>
-        <div class="jp-stat-lbl">Respondidas</div>
-      </div>
-      <div class="jp-stat">
-        <div class="jp-stat-val" id="st-pct">—</div>
-        <div class="jp-stat-lbl">Aproveitamento</div>
-      </div>
+      <div class="jp-stat"><div class="jp-stat-val" id="st-correct">0</div><div class="jp-stat-lbl">Acertos</div></div>
+      <div class="jp-stat"><div class="jp-stat-val" id="st-total">0</div><div class="jp-stat-lbl">Respondidas</div></div>
+      <div class="jp-stat"><div class="jp-stat-val" id="st-pct">—</div><div class="jp-stat-lbl">Aproveitamento</div></div>
     </div>
   </div>
-
   <script>
    const vocab = [
  
